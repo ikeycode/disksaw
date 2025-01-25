@@ -16,6 +16,10 @@ fn main() -> color_eyre::Result<()> {
         .issue_url("https://github.com/ikeycode/sawdisk/issues/new")
         .add_issue_metadata("version", env!("CARGO_PKG_VERSION"))
         .add_issue_metadata("backend", is_backend.to_string())
+        .display_env_section(true)
+        .display_location_section(true)
+        .add_default_filters()
+        .capture_span_trace_by_default(true)
         .issue_filter(|_| true)
         .install()
         .unwrap();
