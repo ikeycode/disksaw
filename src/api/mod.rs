@@ -20,6 +20,18 @@ pub struct BlockDevice {
     pub sectors: u64,
     pub kind: BlockDeviceKind,
     pub model: Option<String>,
+    #[serde(default)]
+    pub partitions: Vec<Partition>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Partition {
+    pub name: String,
+    pub path: String,
+    pub number: u32,
+    pub start: u64,
+    pub end: u64,
+    pub size: u64,
 }
 
 impl From<&disks::BlockDevice> for BlockDevice {
@@ -31,6 +43,7 @@ impl From<&disks::BlockDevice> for BlockDevice {
                 sectors: disk.sectors(),
                 kind: BlockDeviceKind::Disk,
                 model: disk.model().map(String::from),
+                partitions: disk.partitions().iter().map(Into::into).collect(),
             },
             disks::BlockDevice::Loopback(loopback) => BlockDevice {
                 path: loopback.device_path().to_string_lossy().to_string(),
@@ -41,8 +54,24 @@ impl From<&disks::BlockDevice> for BlockDevice {
                         .file_path()
                         .map(|p| p.to_string_lossy().to_string()),
                 },
+                partitions: loopback.disk().map_or(Vec::new(), |d| {
+                    d.partitions().iter().map(Into::into).collect()
+                }),
                 model: None,
             },
+        }
+    }
+}
+
+impl From<&disks::partition::Partition> for Partition {
+    fn from(val: &disks::partition::Partition) -> Self {
+        Partition {
+            name: val.name.clone(),
+            path: val.device.to_string_lossy().to_string(),
+            number: val.number,
+            start: val.start,
+            end: val.end,
+            size: val.size,
         }
     }
 }

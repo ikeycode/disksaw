@@ -9,6 +9,7 @@ mod menu;
 use emojis::*;
 use menu::{enums_to_cliclack, PartitionMenu};
 use partitioning::planner::format_size;
+use tabled::{settings::Style, Table, Tabled};
 
 use crate::api::{self, client::Client};
 
@@ -43,6 +44,45 @@ fn render_device(device: &api::BlockDevice, path_width: usize) -> String {
     )
 }
 
+#[derive(Tabled)]
+struct DisplayPartition {
+    #[tabled(rename = "💽 Name")]
+    name: String,
+    #[tabled(rename = "Starting sector")]
+    start: u64,
+    #[tabled(rename = "Ending sector")]
+    end: u64,
+    #[tabled(rename = "Size")]
+    size: String,
+    #[tabled(rename = "📂 Filesystem")]
+    filesystem: String,
+    #[tabled(skip)]
+    _path: String,
+}
+
+impl From<&api::Partition> for DisplayPartition {
+    fn from(val: &api::Partition) -> Self {
+        DisplayPartition {
+            name: format!("{}", style(format!("/dev/{}", val.name)).cyan()),
+            start: val.start,
+            end: val.end,
+            size: style(format_size(val.size * 512)).yellow().to_string(),
+            _path: val.path.clone(),
+            filesystem: style("unknown").dim().to_string(),
+        }
+    }
+}
+
+fn print_partitions(device: &api::BlockDevice) -> color_eyre::Result<()> {
+    let partitions: Vec<DisplayPartition> =
+        device.partitions.iter().map(Into::into).collect::<Vec<_>>();
+
+    let mut table = Table::new(partitions);
+    table.with(Style::modern_rounded());
+    cliclack::note(format!("{}Partitions", emojis::CHART), table)?;
+    Ok(())
+}
+
 pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
 
@@ -51,7 +91,7 @@ pub fn run() -> color_eyre::Result<()> {
     // Create temporary client just for enumerating devices
     let mut client = Client::new_direct_with_path(&our_exe)?;
 
-    let devices = client
+    let mut devices = client
         .get_block_devices()?
         .into_iter()
         .filter(|d| {
@@ -69,14 +109,16 @@ pub fn run() -> color_eyre::Result<()> {
         .map(|(i, d)| (i, render_device(d, path_width), ""))
         .collect::<Vec<_>>();
 
-    let _ = cliclack::select("Select a disk from the list")
+    let n = cliclack::select("Select a disk from the list")
         .items(&listing)
         .filter_mode()
         .interact()?;
+    let device = devices.remove(n);
 
     // Terminate helper backend
     client.shutdown_backend()?;
     cliclack::clear_screen()?;
+    print_partitions(&device)?;
 
     loop {
         let p = *cliclack::select("What do you want to do")
@@ -93,10 +135,17 @@ pub fn run() -> color_eyre::Result<()> {
             .filter_mode()
             .interact()?;
 
+        // prevent unnecessary redraws
+        if matches!(p, PartitionMenu::Quit) {
+            break;
+        }
+
         cliclack::clear_screen()?;
 
         match p {
-            PartitionMenu::Quit => break,
+            PartitionMenu::List => {
+                print_partitions(&device)?;
+            }
             _ => {
                 cliclack::log::error(format!("Unimplemented: {}", style(&p).bold().yellow()))?;
             }
