@@ -7,6 +7,8 @@ use console::style;
 mod emojis;
 use emojis::*;
 
+use crate::api::client::Client;
+
 // Pretty logo :3
 static ASCII_LOGO: &str = include_str!("ascii.txt");
 
@@ -29,6 +31,20 @@ fn print_intro() -> color_eyre::Result<()> {
 
 pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
+
+    let our_exe = std::env::current_exe()?.to_string_lossy().to_string();
+
+    // Create temporary client just for enumerating devices
+    let mut client = Client::new_direct_with_path(&our_exe)?;
+
+    let devices = client.get_block_devices()?;
+    cliclack::log::remark(format!(
+        "Found the following block devices: {devices}",
+        devices = style(devices.join(", ")).bold()
+    ))?;
+
+    // Terminate helper backend
+    client.shutdown_backend()?;
 
     cliclack::outro(format!(
         "Exiting - No changes have been written {}",
