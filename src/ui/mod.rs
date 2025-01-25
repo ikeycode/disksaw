@@ -76,19 +76,32 @@ pub fn run() -> color_eyre::Result<()> {
 
     // Terminate helper backend
     client.shutdown_backend()?;
+    cliclack::clear_screen()?;
 
-    let _ = cliclack::select("What do you want to do")
-        .items(&enums_to_cliclack(&[
-            PartitionMenu::Create,
-            PartitionMenu::Delete,
-            PartitionMenu::Resize,
-            PartitionMenu::Format,
-            PartitionMenu::Mount,
-            PartitionMenu::Unmount,
-            PartitionMenu::Info,
-            PartitionMenu::Quit,
-        ]))
-        .interact()?;
+    loop {
+        let p = *cliclack::select("What do you want to do")
+            .items(&enums_to_cliclack(&[
+                PartitionMenu::Create,
+                PartitionMenu::Delete,
+                PartitionMenu::Resize,
+                PartitionMenu::Format,
+                PartitionMenu::Mount,
+                PartitionMenu::Unmount,
+                PartitionMenu::Info,
+                PartitionMenu::Quit,
+            ]))
+            .filter_mode()
+            .interact()?;
+
+        cliclack::clear_screen()?;
+
+        match p {
+            PartitionMenu::Quit => break,
+            _ => {
+                cliclack::log::error(format!("Unimplemented: {}", style(&p).bold().yellow()))?;
+            }
+        }
+    }
 
     cliclack::outro(format!(
         "Exiting - No changes have been written {}",
