@@ -157,7 +157,7 @@ checksum = "19d374276b40fb8bbdee95aef7c7fa6b5316ec764510eb64b8dd0e2ed0d7e7f5"
 [[package]]
 name = "disks"
 version = "0.1.0"
-source = "git+https://github.com/serpent-os/disks-rs?rev=23e2307daf5074e68c68e06ec3572876cbdac4ba#23e2307daf5074e68c68e06ec3572876cbdac4ba"
+source = "git+https://github.com/serpent-os/disks-rs?rev=6bd9ffe4cf14222c00137d376f9d34e187a67975#6bd9ffe4cf14222c00137d376f9d34e187a67975"
 dependencies = [
  "log",
  "regex",
@@ -536,7 +536,7 @@ checksum = "c1b04fb49957986fdce4d6ee7a65027d55d4b6d2265e5848bbb507b58ccfdb6f"
 [[package]]
 name = "partitioning"
 version = "0.1.0"
-source = "git+https://github.com/serpent-os/disks-rs?rev=23e2307daf5074e68c68e06ec3572876cbdac4ba#23e2307daf5074e68c68e06ec3572876cbdac4ba"
+source = "git+https://github.com/serpent-os/disks-rs?rev=6bd9ffe4cf14222c00137d376f9d34e187a67975#6bd9ffe4cf14222c00137d376f9d34e187a67975"
 dependencies = [
  "disks",
  "gpt",
