@@ -13,9 +13,10 @@ use tabled::{settings::Style, Table, Tabled};
 
 use crate::api::{self, client::Client};
 
-// Pretty logo :3
+/// ASCII art logo loaded from ascii.txt file
 static ASCII_LOGO: &str = include_str!("ascii.txt");
 
+/// Prints the intro message with styling and warning
 fn print_intro() -> color_eyre::Result<()> {
     cliclack::intro(format!(
         "{name_disk}{name_saw} {DISK}{SAW} - {version}",
@@ -33,6 +34,7 @@ fn print_intro() -> color_eyre::Result<()> {
     Ok(())
 }
 
+/// Formats a block device for display, showing path, model and size
 fn render_device(device: &api::BlockDevice, path_width: usize) -> String {
     let model = device.model.as_deref().unwrap_or("Unknown");
     format!(
@@ -44,6 +46,7 @@ fn render_device(device: &api::BlockDevice, path_width: usize) -> String {
     )
 }
 
+/// Struct representing a partition for display purposes
 #[derive(Debug, Tabled)]
 struct DisplayPartition {
     #[tabled(rename = "💽 Name")]
@@ -73,6 +76,7 @@ impl From<&api::Partition> for DisplayPartition {
     }
 }
 
+/// Prints a formatted table of partitions for a given block device
 fn print_partitions(client: &mut Client, device: &api::BlockDevice) -> color_eyre::Result<()> {
     let mut partitions: Vec<DisplayPartition> =
         device.partitions.iter().map(Into::into).collect::<Vec<_>>();
@@ -88,12 +92,14 @@ fn print_partitions(client: &mut Client, device: &api::BlockDevice) -> color_eyr
     Ok(())
 }
 
+/// Main entry point for the disk partitioning interface
 pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
 
     let our_exe = std::env::current_exe()?.to_string_lossy().to_string();
     let mut client = Client::new_privileged_with_path(&our_exe)?;
 
+    // Get list of valid block devices, filtering out loopback devices without backing files
     let mut devices = client
         .get_block_devices()?
         .into_iter()
@@ -120,6 +126,7 @@ pub fn run() -> color_eyre::Result<()> {
 
     print_partitions(&mut client, &device)?;
 
+    // Main interaction loop
     loop {
         let p = *cliclack::select("What do you want to do")
             .items(&enums_to_cliclack(&[
