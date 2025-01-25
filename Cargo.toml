@@ -11,3 +11,4 @@ disks = { git = "https://github.com/serpent-os/disks-rs", rev = "23e2307daf5074e
 partitioning = { git = "https://github.com/serpent-os/disks-rs", rev = "23e2307daf5074e68c68e06ec3572876cbdac4ba" }
 log = "0.4.25"
 pretty_env_logger = "0.5.0"
+privileged-ipc = { git = "https://github.com/serpent-os/tools-api.git", version = "0.1.0" }
