@@ -92,7 +92,7 @@ pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
 
     let our_exe = std::env::current_exe()?.to_string_lossy().to_string();
-    let mut client = Client::new_direct_with_path(&our_exe)?;
+    let mut client = Client::new_privileged_with_path(&our_exe)?;
 
     let mut devices = client
         .get_block_devices()?
