@@ -45,7 +45,7 @@ fn render_device(device: &api::BlockDevice, path_width: usize) -> String {
     )
 }
 
-#[derive(Tabled)]
+#[derive(Debug, Tabled)]
 struct DisplayPartition {
     #[tabled(rename = "💽 Name")]
     name: String,
@@ -58,7 +58,7 @@ struct DisplayPartition {
     #[tabled(rename = "📂 Filesystem")]
     filesystem: String,
     #[tabled(skip)]
-    _path: String,
+    path: String,
 }
 
 impl From<&api::Partition> for DisplayPartition {
@@ -68,15 +68,20 @@ impl From<&api::Partition> for DisplayPartition {
             start: val.start,
             end: val.end,
             size: style(format_size(val.size * 512)).yellow().to_string(),
-            _path: val.path.clone(),
+            path: val.path.clone(),
             filesystem: style("unknown").dim().to_string(),
         }
     }
 }
 
-fn print_partitions(device: &api::BlockDevice) -> color_eyre::Result<()> {
-    let partitions: Vec<DisplayPartition> =
+fn print_partitions(client: &mut Client, device: &api::BlockDevice) -> color_eyre::Result<()> {
+    let mut partitions: Vec<DisplayPartition> =
         device.partitions.iter().map(Into::into).collect::<Vec<_>>();
+    for part in partitions.iter_mut() {
+        if let Ok(sb) = client.get_superblock(&part.path) {
+            part.filesystem = style(sb.filesystem).cyan().bold().to_string();
+        }
+    }
 
     let mut table = Table::new(partitions);
     table.with(Style::modern_rounded());
@@ -88,9 +93,7 @@ pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
 
     let our_exe = std::env::current_exe()?.to_string_lossy().to_string();
-
-    // Create temporary client just for enumerating devices
-    let mut client = Client::new_direct_with_path(&our_exe)?;
+    let mut client = Client::new_privileged_with_path(&our_exe)?;
 
     let mut devices = client
         .get_block_devices()?
@@ -116,10 +119,8 @@ pub fn run() -> color_eyre::Result<()> {
         .interact()?;
     let device = devices.remove(n);
 
-    // Terminate helper backend
-    client.shutdown_backend()?;
     cliclack::clear_screen()?;
-    print_partitions(&device)?;
+    print_partitions(&mut client, &device)?;
 
     loop {
         let p = *cliclack::select("What do you want to do")
@@ -145,7 +146,7 @@ pub fn run() -> color_eyre::Result<()> {
 
         match p {
             PartitionMenu::List => {
-                print_partitions(&device)?;
+                print_partitions(&mut client, &device)?;
             }
             _ => {
                 cliclack::log::error(format!("Unimplemented: {}", style(&p).bold().yellow()))?;
@@ -157,6 +158,9 @@ pub fn run() -> color_eyre::Result<()> {
         "Exiting - No changes have been written {}",
         SPARKLES
     ))?;
+
+    // Terminate helper backend
+    client.shutdown_backend()?;
 
     Ok(())
 }

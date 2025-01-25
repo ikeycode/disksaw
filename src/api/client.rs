@@ -7,7 +7,7 @@ use std::ops::{Deref, DerefMut};
 use color_eyre::eyre::bail;
 use privileged_ipc::{DirectExecutor, IpcClient, PkexecExecutor};
 
-use super::{BlockDevice, Request, Response};
+use super::{BlockDevice, Request, Response, Superblock};
 
 pub struct Client(pub IpcClient<Request, Response>);
 
@@ -46,6 +46,21 @@ impl Client {
             match response {
                 Response::BlockDevices(devices) => Ok(devices),
                 Response::Error(e) => bail!(e),
+                _ => bail!("Unexpected response from backend service"),
+            }
+        } else {
+            bail!("No response from backend service")
+        }
+    }
+
+    pub fn get_superblock(&mut self, device: &str) -> color_eyre::Result<Superblock> {
+        self.send(&Request::GetSuperblock(device.to_string()))?;
+        if let Some(response) = self.incoming()?.next() {
+            let response = response?;
+            match response {
+                Response::Superblock(superblock) => Ok(superblock),
+                Response::Error(e) => bail!(e),
+                _ => bail!("Unexpected response from backend service"),
             }
         } else {
             bail!("No response from backend service")

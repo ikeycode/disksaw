@@ -34,6 +34,23 @@ pub struct Partition {
     pub size: u64,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Superblock {
+    pub uuid: Option<String>,
+    pub label: Option<String>,
+    pub filesystem: String,
+}
+
+impl From<superblock::Superblock> for Superblock {
+    fn from(val: superblock::Superblock) -> Self {
+        Superblock {
+            uuid: val.uuid().ok(),
+            label: val.label().ok(),
+            filesystem: val.kind().to_string(),
+        }
+    }
+}
+
 impl From<&disks::BlockDevice> for BlockDevice {
     fn from(val: &disks::BlockDevice) -> Self {
         match val {
@@ -81,6 +98,7 @@ impl From<&disks::partition::Partition> for Partition {
 pub enum Request {
     GetBlockDevices,
     Shutdown,
+    GetSuperblock(String),
 }
 
 /// Encapsulation of server-initiated responses
@@ -88,4 +106,5 @@ pub enum Request {
 pub enum Response {
     BlockDevices(Vec<BlockDevice>),
     Error(String),
+    Superblock(Superblock),
 }
