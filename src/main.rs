@@ -2,17 +2,22 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-use console::{style, Emoji};
+use console::style;
 use pretty_env_logger::formatted_builder;
 
 // Pretty logo :3
 static ASCII_LOGO: &str = include_str!("ascii.txt");
 
-fn print_intro() -> color_eyre::Result<()> {
-    static SAW: Emoji<'_, '_> = Emoji("🪚 ", "");
-    static DISK: Emoji<'_, '_> = Emoji("💾 ", "");
-    static LIGHTNING: Emoji<'_, '_> = Emoji("⚡️ ", "");
+mod emojis {
+    use console::Emoji;
+    pub static SAW: Emoji<'_, '_> = Emoji("🪚 ", "");
+    pub static DISK: Emoji<'_, '_> = Emoji("💾 ", "");
+    pub static LIGHTNING: Emoji<'_, '_> = Emoji("⚡️ ", "");
+    pub static SPARKLES: Emoji<'_, '_> = Emoji("✨ ", "");
+}
 
+fn print_intro() -> color_eyre::Result<()> {
+    use emojis::*;
     cliclack::intro(format!(
         "{name_saw}{name_disk} - {version} {SAW}{DISK}",
         name_saw = style("saw").yellow().bold(),
@@ -30,8 +35,7 @@ fn print_intro() -> color_eyre::Result<()> {
 }
 
 fn main() -> color_eyre::Result<()> {
-    static SPARKLES: Emoji<'_, '_> = Emoji("✨ ", "");
-
+    use emojis::*;
     // Initialize color_eyre for better error messages + error reports
     color_eyre::config::HookBuilder::default()
         .issue_url("https://github.com/ikeycode/sawdisk/issues/new")
