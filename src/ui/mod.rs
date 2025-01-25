@@ -17,7 +17,6 @@ use crate::api::{self, client::Client};
 static ASCII_LOGO: &str = include_str!("ascii.txt");
 
 fn print_intro() -> color_eyre::Result<()> {
-    cliclack::clear_screen()?;
     cliclack::intro(format!(
         "{name_disk}{name_saw} {DISK}{SAW} - {version}",
         name_disk = style("disk").cyan().bold(),
@@ -119,7 +118,6 @@ pub fn run() -> color_eyre::Result<()> {
         .interact()?;
     let device = devices.remove(n);
 
-    cliclack::clear_screen()?;
     print_partitions(&mut client, &device)?;
 
     loop {
@@ -141,8 +139,6 @@ pub fn run() -> color_eyre::Result<()> {
         if matches!(p, PartitionMenu::Quit) {
             break;
         }
-
-        cliclack::clear_screen()?;
 
         match p {
             PartitionMenu::List => {
