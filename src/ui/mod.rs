@@ -87,7 +87,7 @@ pub fn run() -> color_eyre::Result<()> {
                 PartitionMenu::Format,
                 PartitionMenu::Mount,
                 PartitionMenu::Unmount,
-                PartitionMenu::Info,
+                PartitionMenu::List,
                 PartitionMenu::Quit,
             ]))
             .filter_mode()

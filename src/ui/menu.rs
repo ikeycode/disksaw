@@ -12,7 +12,7 @@ pub enum PartitionMenu {
     Format,
     Mount,
     Unmount,
-    Info,
+    List,
     Quit,
 }
 
@@ -32,7 +32,7 @@ impl Display for PartitionMenu {
             PartitionMenu::Format => write!(f, "Format Partition"),
             PartitionMenu::Mount => write!(f, "Mount Partition"),
             PartitionMenu::Unmount => write!(f, "Unmount Partition"),
-            PartitionMenu::Info => write!(f, "Info Partition"),
+            PartitionMenu::List => write!(f, "List Partitions"),
             PartitionMenu::Quit => write!(f, "Quit"),
         }
     }
