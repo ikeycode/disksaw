@@ -1,4 +1,4 @@
-# sawdisk
+# disksaw
 
 WARNING: This is still a toy! It is not ready for production use, and might never become ready!
 
@@ -9,4 +9,4 @@ to support other use cases in Serpent OS, such as our installer, [lichen](https:
 
 ## License
 
-`disks-rs` is available under the terms of the [MPL-2.0](https://spdx.org/licenses/MPL-2.0.html)
+`disksaw` is available under the terms of the [MPL-2.0](https://spdx.org/licenses/MPL-2.0.html)

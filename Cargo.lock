@@ -286,6 +286,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "disksaw"
+version = "0.1.0"
+dependencies = [
+ "cliclack",
+ "color-eyre",
+ "console",
+ "disks",
+ "log",
+ "partitioning",
+ "pretty_env_logger",
+ "privileged-ipc",
+ "serde",
+ "serde_json",
+ "superblock",
+ "tabled",
+]
+
+[[package]]
 name = "displaydoc"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -933,24 +951,6 @@ name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
-
-[[package]]
-name = "sawdisk"
-version = "0.1.0"
-dependencies = [
- "cliclack",
- "color-eyre",
- "console",
- "disks",
- "log",
- "partitioning",
- "pretty_env_logger",
- "privileged-ipc",
- "serde",
- "serde_json",
- "superblock",
- "tabled",
-]
 
 [[package]]
 name = "serde"

@@ -4,8 +4,8 @@
 
 use console::Emoji;
 
-pub static SAW: Emoji<'_, '_> = Emoji("🪚 ", "");
-pub static DISK: Emoji<'_, '_> = Emoji("💾 ", "");
+pub static SAW: Emoji<'_, '_> = Emoji("🪚", "");
+pub static DISK: Emoji<'_, '_> = Emoji("💽", "");
 pub static LIGHTNING: Emoji<'_, '_> = Emoji("⚡️ ", "");
 pub static SPARKLES: Emoji<'_, '_> = Emoji("✨ ", "");
 pub static CHART: Emoji<'_, '_> = Emoji("📊 ", "");

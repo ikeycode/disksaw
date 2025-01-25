@@ -4,8 +4,8 @@
 
 use std::env;
 
+use disksaw::{backend_service, ui};
 use pretty_env_logger::formatted_builder;
-use sawdisk::{backend_service, ui};
 
 fn main() -> color_eyre::Result<()> {
     // Check if --backend-service is in args
@@ -13,7 +13,7 @@ fn main() -> color_eyre::Result<()> {
 
     // Initialize color_eyre for better error messages + error reports
     color_eyre::config::HookBuilder::default()
-        .issue_url("https://github.com/ikeycode/sawdisk/issues/new")
+        .issue_url("https://github.com/ikeycode/disksaw/issues/new")
         .add_issue_metadata("version", env!("CARGO_PKG_VERSION"))
         .add_issue_metadata("backend", is_backend.to_string())
         .display_env_section(true)

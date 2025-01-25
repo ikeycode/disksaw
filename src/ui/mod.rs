@@ -19,9 +19,9 @@ static ASCII_LOGO: &str = include_str!("ascii.txt");
 fn print_intro() -> color_eyre::Result<()> {
     cliclack::clear_screen()?;
     cliclack::intro(format!(
-        "{name_saw}{name_disk} - {version} {SAW}{DISK}",
+        "{name_disk}{name_saw} {DISK}{SAW} - {version}",
+        name_disk = style("disk").cyan().bold(),
         name_saw = style("saw").yellow().bold(),
-        name_disk = style("disk").bold(),
         version = style(env!("CARGO_PKG_VERSION")).dim(),
     ))?;
     cliclack::log::remark(format!(
