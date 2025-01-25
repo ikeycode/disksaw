@@ -6,8 +6,9 @@ use console::style;
 
 mod emojis;
 use emojis::*;
+use partitioning::planner::format_size;
 
-use crate::api::client::Client;
+use crate::api::{self, client::Client};
 
 // Pretty logo :3
 static ASCII_LOGO: &str = include_str!("ascii.txt");
@@ -29,6 +30,17 @@ fn print_intro() -> color_eyre::Result<()> {
     Ok(())
 }
 
+fn render_device(device: &api::BlockDevice, path_width: usize) -> String {
+    let model = device.model.as_deref().unwrap_or("Unknown");
+    format!(
+        "{:width$} {} {}",
+        style(&device.path).bold(),
+        style("⟶").dim(),
+        style(format!("{} ({})", model, format_size(device.size))).yellow(),
+        width = path_width
+    )
+}
+
 pub fn run() -> color_eyre::Result<()> {
     print_intro()?;
 
@@ -37,11 +49,28 @@ pub fn run() -> color_eyre::Result<()> {
     // Create temporary client just for enumerating devices
     let mut client = Client::new_direct_with_path(&our_exe)?;
 
-    let devices = client.get_block_devices()?;
-    cliclack::log::remark(format!(
-        "Found the following block devices: {devices}",
-        devices = style(devices.join(", ")).bold()
-    ))?;
+    let devices = client
+        .get_block_devices()?
+        .into_iter()
+        .filter(|d| {
+            if let api::BlockDeviceKind::Loopback { backing_file } = &d.kind {
+                backing_file.is_some()
+            } else {
+                true
+            }
+        })
+        .collect::<Vec<_>>();
+    let path_width = devices.iter().map(|d| d.path.len()).max().unwrap_or(0);
+    let listing = devices
+        .iter()
+        .enumerate()
+        .map(|(i, d)| (i, render_device(d, path_width), ""))
+        .collect::<Vec<_>>();
+
+    let _ = cliclack::select("Select a disk from the list")
+        .items(&listing)
+        .filter_mode()
+        .interact()?;
 
     // Terminate helper backend
     client.shutdown_backend()?;

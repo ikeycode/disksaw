@@ -21,16 +21,13 @@ pub fn run() -> color_eyre::Result<()> {
         match request? {
             Request::GetBlockDevices => {
                 let devices = BlockDevice::discover().unwrap_or_default();
-                let mapped = devices
-                    .iter()
-                    .map(|d| d.device().to_string_lossy().to_string())
-                    .collect();
+                let mapped = devices.iter().map(Into::into).collect();
                 client.send(&Response::BlockDevices(mapped))?;
-            },
+            }
             Request::Shutdown => {
                 client.shutdown(std::net::Shutdown::Both)?;
                 break;
-            },
+            }
         }
     }
     Ok(())

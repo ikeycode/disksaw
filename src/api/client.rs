@@ -7,7 +7,7 @@ use std::ops::{Deref, DerefMut};
 use color_eyre::eyre::bail;
 use privileged_ipc::{DirectExecutor, IpcClient, PkexecExecutor};
 
-use super::{Request, Response};
+use super::{BlockDevice, Request, Response};
 
 pub struct Client(pub IpcClient<Request, Response>);
 
@@ -39,7 +39,7 @@ impl Client {
     }
 
     /// Get a list of block devices.
-    pub fn get_block_devices(&mut self) -> color_eyre::Result<Vec<String>> {
+    pub fn get_block_devices(&mut self) -> color_eyre::Result<Vec<BlockDevice>> {
         self.send(&Request::GetBlockDevices)?;
         if let Some(response) = self.incoming()?.next() {
             let response = response?;
