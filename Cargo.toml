@@ -7,5 +7,7 @@ edition = "2021"
 cliclack = { git = "https://github.com/ikeycode/cliclack.git", version = "0.3.5" }
 color-eyre = { version = "0.6.3", features = ["issue-url"] }
 console = "0.15.10"
+disks = { git = "https://github.com/serpent-os/disks-rs", rev = "23e2307daf5074e68c68e06ec3572876cbdac4ba" }
+partitioning = { git = "https://github.com/serpent-os/disks-rs", rev = "23e2307daf5074e68c68e06ec3572876cbdac4ba" }
 log = "0.4.25"
 pretty_env_logger = "0.5.0"
