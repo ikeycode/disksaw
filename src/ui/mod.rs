@@ -17,6 +17,7 @@ use crate::api::{self, client::Client};
 static ASCII_LOGO: &str = include_str!("ascii.txt");
 
 fn print_intro() -> color_eyre::Result<()> {
+    cliclack::clear_screen()?;
     cliclack::intro(format!(
         "{name_saw}{name_disk} - {version} {SAW}{DISK}",
         name_saw = style("saw").yellow().bold(),
