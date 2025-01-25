@@ -5,7 +5,9 @@
 use console::style;
 
 mod emojis;
+mod menu;
 use emojis::*;
+use menu::{enums_to_cliclack, PartitionMenu};
 use partitioning::planner::format_size;
 
 use crate::api::{self, client::Client};
@@ -74,6 +76,19 @@ pub fn run() -> color_eyre::Result<()> {
 
     // Terminate helper backend
     client.shutdown_backend()?;
+
+    let _ = cliclack::select("What do you want to do")
+        .items(&enums_to_cliclack(&[
+            PartitionMenu::Create,
+            PartitionMenu::Delete,
+            PartitionMenu::Resize,
+            PartitionMenu::Format,
+            PartitionMenu::Mount,
+            PartitionMenu::Unmount,
+            PartitionMenu::Info,
+            PartitionMenu::Quit,
+        ]))
+        .interact()?;
 
     cliclack::outro(format!(
         "Exiting - No changes have been written {}",
