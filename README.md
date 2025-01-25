@@ -7,6 +7,8 @@ A WIP tool leveraging [disks-rs](https://github.com/serpent-os/disks-rs) to prov
 The goal is to provide a playground in which to refine the API of `disks-rs`, extending the functionality for "free"
 to support other use cases in Serpent OS, such as our installer, [lichen](https://github.com/serpent-os/lichen).
 
+![Screenshot](https://raw.githubusercontent.com/serpent-os/disksaw/refs/heads/main/.github/Screenshot.png)
+
 ## License
 
 `disksaw` is available under the terms of the [MPL-2.0](https://spdx.org/licenses/MPL-2.0.html)
