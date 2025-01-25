@@ -12,3 +12,5 @@ partitioning = { git = "https://github.com/serpent-os/disks-rs", rev = "23e2307d
 log = "0.4.25"
 pretty_env_logger = "0.5.0"
 privileged-ipc = { git = "https://github.com/serpent-os/tools-api.git", version = "0.1.0" }
+serde_json = "1.0.137"
+serde = { version = "1.0.217", features = ["derive"] }

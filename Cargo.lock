@@ -659,6 +659,8 @@ dependencies = [
  "partitioning",
  "pretty_env_logger",
  "privileged-ipc",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
